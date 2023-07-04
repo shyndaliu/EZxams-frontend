@@ -31,16 +31,7 @@ export default function NavBar({ session }) {
             <p>My First Project</p>
           </Link>
           <div>
-            {session ? (
-              <UserDropdown session={session} />
-            ) : (
-              <button
-                className="rounded-full border border-black bg-black p-1.5 px-4 text-sm text-white transition-all hover:bg-white hover:text-black"
-                onClick={() => setShowSignInModal(true)}
-              >
-                Sign In
-              </button>
-            )}
+            <UserDropdown session={session} />
           </div>
         </div>
       </div>

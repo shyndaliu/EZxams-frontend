@@ -8,6 +8,14 @@ module.exports = {
   },
   theme: {
     extend: {
+      colors: {
+        'title-violet': '#513174',
+        'back-white': '#FCFCFC',
+        'btn': '#7776D0',
+        'blur-blue': '#C1ABFF',
+        'blur-pink': '#FFD0F2',
+        'purple': '#4D16EA',
+      },
       fontFamily: {
         display: ["var(--font-sf)", "system-ui", "sans-serif"],
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
