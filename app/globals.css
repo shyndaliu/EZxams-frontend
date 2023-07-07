@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@keyframes slideout {
+    0% {
+        left: 0%
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+.slideout {
+    animation-name: slideout;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+}
