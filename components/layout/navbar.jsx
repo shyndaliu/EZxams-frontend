@@ -28,7 +28,7 @@ export default function NavBar({ session }) {
               height="30"
               className="mr-2 rounded-sm"
             ></Image>
-            <p>My First Project</p>
+            <p>EZxams</p>
           </Link>
           <div>
             <UserDropdown session={session} />

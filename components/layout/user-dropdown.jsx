@@ -3,6 +3,8 @@
 import { Fragment } from "react";
 import { signOut } from "next-auth/react";
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/20/solid'
+import { CalendarDaysIcon } from "@heroicons/react/24/outline"
+import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline'
 import Image from "next/image";
 import { Menu, Transition } from '@headlessui/react'
 import { Session } from "next-auth";
@@ -40,13 +42,31 @@ export default function UserDropdown({ session }) {
           <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
             <Menu.Item>
               {({ active }) => (
-                <button
-                  className={cx(active ? 'bg-gray-100' : '', 'relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-sm text-gray-700')}
-                  onClick={() => signOut()}
-                >
-                  <ArrowRightOnRectangleIcon className="h-4 w-4" />
-                  <p className="text-sm">Sign out</p>
-                </button>
+                <>
+                  <a href="/form">
+                    <button
+                      className={cx(active ? 'bg-gray-100' : '', 'relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-sm text-gray-700')}
+                    >
+                      <CalendarDaysIcon className="h-4 w-4" />
+                      <p className="text-sm">New Table</p>
+                    </button>
+                  </a>
+                  <a href="/chat">
+                    <button
+                      className={cx(active ? 'bg-gray-100' : '', 'relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-sm text-gray-700')}
+                    >
+                      <ChatBubbleLeftRightIcon className="h-4 w-4" />
+                      <p className="text-sm">Chat with Cal Newport</p>
+                    </button>
+                  </a>
+                  <button
+                    className={cx(active ? 'bg-gray-100' : '', 'relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-sm text-gray-700')}
+                    onClick={() => signOut()}
+                  >
+                    <ArrowRightOnRectangleIcon className="h-4 w-4" />
+                    <p className="text-sm">Sign out</p>
+                  </button>
+                </>
               )}
             </Menu.Item>
           </Menu.Items>
