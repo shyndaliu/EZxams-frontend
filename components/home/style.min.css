@@ -24,7 +24,7 @@
     height: 90%;
     width: 4px;
     background: rgb(255, 208, 242);
-    background: linear-gradient(180deg, rgba(196, 228, 241, 1) 0%, rgba(193, 171, 255, 1) 47%, rgba(244, 201, 251, 1) 100%);
+    background: linear-gradient(180deg, rgba(193, 171, 255, 1) 0%, rgba(244, 201, 251, 1) 47%, rgba(193, 171, 255, 1) 100%);
 }
 
 .vertical-timeline.vertical-timeline--one-column-right::before {

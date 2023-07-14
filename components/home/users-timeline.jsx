@@ -1,68 +1,35 @@
 import React from "react";
 import { VerticalTimelineElement, VerticalTimeline } from "react-vertical-timeline-component";
 import './style.min.css'
-import { SparklesIcon, StarIcon } from "@heroicons/react/20/solid";
+import { MapPinIcon, SparklesIcon, FireIcon, RocketLaunchIcon, HeartIcon, StarIcon, TrophyIcon } from "@heroicons/react/20/solid";
 
 export default function UserTimeline() {
-    const timeline = [
-        {
-            icon: SparklesIcon,
-            date: '',
-            title: 'Creative Director',
-            subtitle: 'Miami, FL',
-            desc: 'Creative Direction, User Experience, Visual Design, Project Management, Team Leading',
-        },
-        {
-            icon: SparklesIcon,
-            date: '2010 - 2011',
-            title: 'Art Director',
-            subtitle: 'San Francisco, CA',
-            desc: 'Creative Direction, User Experience, Visual Design, SEO, Online Marketing',
-        },
-        {
-            icon: SparklesIcon,
-            date: '2008 - 2010',
-            title: 'Web Designer',
-            subtitle: 'Los Angeles, CA',
-            desc: 'User Experience, Visual Design',
-        },
-        {
-            icon: SparklesIcon,
-            date: '2006 - 2008',
-            title: 'Web Designer',
-            subtitle: 'San Francisco, CA',
-            desc: 'User Experience, Visual Design',
-        },
-        {
-            icon: SparklesIcon,
-            date: 'April 2013',
-            title: 'Content Marketing for Web, Mobile and Social Media',
-            subtitle: 'Online Course',
-            desc: 'Strategy, Social Media',
-        },
-        {
-            icon: SparklesIcon,
-            date: 'November 2012',
-            title: 'Agile Development Scrum Master',
-            subtitle: 'Certification',
-            desc: 'Creative Direction, User Experience, Visual Design',
-        },
-        {
-            icon: SparklesIcon,
-            date: '2002 - 2006',
-            title: 'Bachelor of Science in Interactive Digital Media Visual Imaging',
-            subtitle: 'Bachelor Degree',
-            desc: 'Creative Direction, Visual Design',
-        },
-        { icon: StarIcon },
-    ];
+    const icons = [<SparklesIcon />, <FireIcon />, <RocketLaunchIcon />, <HeartIcon />, <StarIcon />]
+    const table = {
+        "24.06":
+            { "4PM-4.30PM": "Introductory reading on Pigeonhole Principle", "4.30PM-5PM": "Practice easy problems involving Pigeonhole Principle", "5PM-6PM": "Do some tough problems and validate concepts" },
+        "25.06":
+            { "3PM-3.20PM": "Start by recapping fundamental concepts of Permutations and Combinations", "3.20PM-4.05PM": "Revise formulas periodically", "4.05PM-5.05PM": "Apply formulas to problems, Difficulty level to be increased gradually as you master each level", "6PM-6.30PM": "Learn the fundamentals and formulas of Binomial Theorem", "6.30PM-8PM": "Practice expressive problems and numerical exercies", "8PM-8.10PM": "Solve tough problems to confirm competence attained." }
+    }
+    let timeline = []
+    timeline.push({
+        date: '',
+        title: 'Your Personal Roadmap',
+        desc: 'Watch your progress based on generated table right here!',
+    })
+    //{ title: 'Finish line!' }
+    let length = timeline.length;
     return <>
-        <div className="z-20 w-full pt-[5%]">
+        < div className="z-20 w-full pt-[5%]" >
             <VerticalTimeline className="z-25" >
                 {timeline.map((t, i) => {
                     const contentStyle =
                         i === 0
-                            ? { background: 'rgba(74, 20, 228, 0.1)', color: '#fff' }
+                            ? { background: 'rgba(193, 171, 255, 1)', color: '#fff' }
+                            : { background: '#FCFCFC', color: '#513174' };
+                    const iconStyle =
+                        i === 0
+                            ? { background: 'rgba(193, 171, 255, 1)', color: '#fff' }
                             : { background: '#FCFCFC', color: '#513174' };
 
                     return (
@@ -71,9 +38,9 @@ export default function UserTimeline() {
                             className="vertical-timeline-element--work"
                             contentStyle={contentStyle}
                             contentArrowStyle={{ visibility: "hidden" }}
-                            iconStyle={{ background: 'white', color: 'rgba(128, 128, 215, 1)' }}
+                            iconStyle={iconStyle}
                             date={t.date}
-                            {...t.icon}
+                            icon={i == 0 ? <MapPinIcon /> : i == length - 1 ? <TrophyIcon /> : icons[i % 5]}
                         >
                             {t.title ? (
                                 <React.Fragment>
@@ -85,10 +52,23 @@ export default function UserTimeline() {
                     );
                 })}
             </VerticalTimeline >
-        </div>
+        </div >
 
-        <div className="w-full h-[1600px] absolute top-0 overflow-hidden">
-            <div className="left-0 top-[-100px] absolute bg-blur-pink rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]" />
+        <div className="w-full h-[1800px] absolute top-0 overflow-hidden">
+            <div className="right-0 top-[-50px] absolute bg-blur-blue rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]" />
+            <div className="left-0 top-[550px] absolute bg-blur-pink rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]" />
+            <div className="right-0 top-[1150px] absolute bg-fuchsia-300 rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]" />
+        </div>
+        <div className="w-full h-[1800px] top-0 absolute overflow-hidden">
+            <div className="right-0 top-[-50px] absolute origin-top-left justify-center items-center inline-flex">
+                <img className="" src="/form2.png" />
+            </div>
+            <div className="left-0 top-[550px] absolute origin-top-left justify-center items-center inline-flex">
+                <img className="w-[486px] h-[633px]" src="/form3.png" />
+            </div>
+            <div className="right-0 top-[1150px] absolute origin-top-left  justify-center items-center inline-flex">
+                <img className="w-[473px] h-[509px] " src="/form4.png" />
+            </div>
         </div>
     </>
 
