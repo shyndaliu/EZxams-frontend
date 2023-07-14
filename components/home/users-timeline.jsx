@@ -1,13 +1,13 @@
 import React from "react";
 import { VerticalTimelineElement, VerticalTimeline } from "react-vertical-timeline-component";
-import 'react-vertical-timeline-component/style.min.css';
+import './style.min.css'
 import { SparklesIcon, StarIcon } from "@heroicons/react/20/solid";
 
 export default function UserTimeline() {
     const timeline = [
         {
             icon: SparklesIcon,
-            date: '2011 - present',
+            date: '',
             title: 'Creative Director',
             subtitle: 'Miami, FL',
             desc: 'Creative Direction, User Experience, Visual Design, Project Management, Team Leading',
@@ -57,31 +57,39 @@ export default function UserTimeline() {
         { icon: StarIcon },
     ];
     return <>
-        <VerticalTimeline >
-            {timeline.map((t, i) => {
-                const contentStyle =
-                    i === 0
-                        ? { background: 'rgb(33, 150, 243)', color: '#fff' }
-                        : undefined;
+        <div className="z-20 w-full pt-[5%]">
+            <VerticalTimeline className="z-25" >
+                {timeline.map((t, i) => {
+                    const contentStyle =
+                        i === 0
+                            ? { background: 'rgba(74, 20, 228, 0.1)', color: '#fff' }
+                            : { background: '#FCFCFC', color: '#513174' };
 
-                return (
-                    <VerticalTimelineElement
-                        key={i}
-                        className="vertical-timeline-element--work"
-                        contentStyle={{ background: '#FCFCFC', color: '#513174' }}
-                        contentArrowStyle={{ visibility: "hidden" }}
-                        iconStyle={{ background: '#FCFCFC', color: 'black', border: 'black' }}
-                        date={t.date}
-                        {...t.icon}
-                    >
-                        {t.title ? (
-                            <React.Fragment>
-                                <h3 className="vertical-timeline-element-title text-xl ">{t.title}</h3>
-                                {t.desc && <p>{t.desc}</p>}
-                            </React.Fragment>
-                        ) : undefined}
-                    </VerticalTimelineElement>
-                );
-            })}
-        </VerticalTimeline ></>
+                    return (
+                        <VerticalTimelineElement
+                            key={i}
+                            className="vertical-timeline-element--work"
+                            contentStyle={contentStyle}
+                            contentArrowStyle={{ visibility: "hidden" }}
+                            iconStyle={{ background: 'white', color: 'rgba(128, 128, 215, 1)' }}
+                            date={t.date}
+                            {...t.icon}
+                        >
+                            {t.title ? (
+                                <React.Fragment>
+                                    <h3 className="vertical-timeline-element-title text-xl ">{t.title}</h3>
+                                    {t.desc && <p>{t.desc}</p>}
+                                </React.Fragment>
+                            ) : undefined}
+                        </VerticalTimelineElement>
+                    );
+                })}
+            </VerticalTimeline >
+        </div>
+
+        <div className="w-full h-[1600px] absolute top-0 overflow-hidden">
+            <div className="left-0 top-[-100px] absolute bg-blur-pink rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]" />
+        </div>
+    </>
+
 }
