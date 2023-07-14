@@ -1,18 +1,14 @@
-"use client";
-
+'use client';
 import Image from "next/image";
 import Link from "next/link";
 import useScroll from "@/lib/hooks/use-scroll";
-import { useSignInModal } from "./sign-in-modal";
 import UserDropdown from "./user-dropdown";
 
 export default function NavBar({ session }) {
-  const { SignInModal, setShowSignInModal } = useSignInModal();
   const scrolled = useScroll(50);
 
   return (
     <>
-      <SignInModal />
       <div
         className={`fixed top-0 w-full ${scrolled
           ? "border-b border-gray-200 bg-white/50 backdrop-blur-xl"

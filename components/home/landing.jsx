@@ -9,7 +9,6 @@ import { signIn } from "next-auth/react";
 
 
 
-
 export default function Landing() {
   const [signInClicked, setSignInClicked] = useState(false);
   let [showSignIn, setshowSignIn] = useState(false);

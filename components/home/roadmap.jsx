@@ -1,7 +1,21 @@
-import React from "react";
+'use client';
 
-export default async function Roadmap() {
-    return <>
-        here is your progress
-    </>
+import { useEffect } from "react";
+import { fetchSignIn, fetchActiveTable } from "@/app/api/auth/[...nextauth]/testroute";
+import UserTimeline from "./users-timeline";
+import RoadmapLanding from "./roadmap-landing";
+
+
+export default function Roadmap({ session }) {
+    let activeTable;
+    // useEffect(() => {
+    //     fetchSignIn(session);
+    //     activeTable = fetchActiveTable(session);
+    // }, []);
+
+    return (
+        <>
+            <UserTimeline />
+        </>
+    );
 }

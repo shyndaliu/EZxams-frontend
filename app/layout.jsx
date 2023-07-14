@@ -1,10 +1,11 @@
 import "./globals.css";
 import Script from 'next/script';
 import { Analytics } from "@vercel/analytics/react";
-import cx from "classnames";
 import { outfit, roboto } from "./fonts";
 import Nav from "@/components/layout/nav";
 import { Suspense } from "react";
+
+
 
 export const metadata = {
   title: "EZxams",
@@ -40,6 +41,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <Script id="safari-viewport-fix">{IOS_SAFARI_VIEWPORT_UNIT_CORRECTION}</Script>
+
       <body className={outfit.className + " " + roboto.className}>
         <div className="fixed h-screen w-full bg-back-white" />
         <Suspense fallback="...">
