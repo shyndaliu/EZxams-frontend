@@ -36,7 +36,7 @@ export function ChatLine({ role = 'assistant', content, isStreaming }) {
     <div
       className={
         role === 'assistant'
-          ? "border-b border-black/10 bg-gray-50 text-gray-800"
+          ? "bg-blur-blue/10 text-gray-800"
           : "border-b border-black/10 bg-white text-gray-800"
       }
     >

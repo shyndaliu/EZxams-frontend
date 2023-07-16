@@ -50,18 +50,23 @@ export default function UserTimeline() {
 
     useEffect(() => {
         const calculateBackgroundElements = () => {
-            const colors = ["bg-blur-blue", "bg-blur-pink", "bg-fuchsia-300"]
-            const elementCount = Math.floor(height / 600); // Adjust 800 to your desired threshold
+            const colors = ["bg-blur-blue", "bg-blur-pink", "bg-fuchsia-300"];
+            const elementCount = Math.floor(height / 600);; // Adjust 800 to your desired threshold
             const elements = [];
             for (let i = 0; i < elementCount; i++) {
-                let position = (i % 2 == 0) ? "right" : "left";
-                let top = -50 + i * 650;
+                let position = (i % 2) ? "left" : "right";
+                let top = -50 + i * 600;
                 elements.push(
                     <div
                         key={i}
                         className={`${position}-0 top-[${top}px] absolute ${colors[i % 3]} rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]`}
                     />
                 );
+                elements.push(
+                    <div className={`${position}-0 top-[${top}px] absolute origin-top-left justify-center items-center inline-flex`}>
+                        <img src={`/form${(i + 1) % 5 + 1}.png`} />
+                    </div>
+                )
             }
 
             setBackgroundElements(elements);
@@ -74,7 +79,6 @@ export default function UserTimeline() {
     }, [height]);
 
     return <>
-        {backgroundElements}
         < div className="z-20 w-full pt-[5%]" ref={timelineRef}>
             <VerticalTimeline className="z-25" >
                 {timeline.map((t, i) => {
@@ -109,8 +113,10 @@ export default function UserTimeline() {
             </VerticalTimeline >
         </div >
 
+        {isBgRendered ? <div className="absolute w-full h-[3000px] top-0">{backgroundElements}</div> : null}
 
-        <div className="w-full h-[1800px] top-0 absolute overflow-hidden">
+
+        {/* <div className="w-full h-[1800px] top-0 absolute overflow-hidden">
             <div className="right-0 top-[-50px] absolute origin-top-left justify-center items-center inline-flex">
                 <img className="" src="/form2.png" />
             </div>
@@ -120,7 +126,7 @@ export default function UserTimeline() {
             <div className="right-0 top-[1150px] absolute origin-top-left  justify-center items-center inline-flex">
                 <img className="w-[473px] h-[509px] " src="/form4.png" />
             </div>
-        </div>
+        </div> */}
     </>
 
 }

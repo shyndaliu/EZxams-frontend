@@ -8,14 +8,14 @@ import RoadmapLanding from "./roadmap-landing";
 
 export default function Roadmap({ session }) {
     let activeTable;
-    // useEffect(() => {
-    //     fetchSignIn(session);
-    //     activeTable = fetchActiveTable(session);
-    // }, []);
-
+    useEffect(() => {
+        fetchSignIn(session);
+        activeTable = fetchActiveTable(session);
+    }, []);
+    activeTable = { "table": "dfsdfsd" };
     return (
         <>
-            <UserTimeline />
+            {activeTable ? <UserTimeline /> : <RoadmapLanding />}
         </>
     );
 }
