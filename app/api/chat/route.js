@@ -18,6 +18,7 @@ export async function POST(req) {
     },
   ]
   messages.push(...body?.messages)
+  const email = body?.email
   const payload = {
     model: 'gpt-3.5-turbo',
     messages: messages,
@@ -32,7 +33,6 @@ export async function POST(req) {
     n: 1,
   }
 
-  const [stream, tokensUsed] = await OpenAIStream(payload)
-  console.log(tokensUsed)
+  const stream = await OpenAIStream(payload, email)
   return new NextResponse(stream)
 }

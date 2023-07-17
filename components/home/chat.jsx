@@ -17,7 +17,7 @@ export const initialMessages = [
   },
 ]
 
-const InputMessage = ({ input, setInput, sendMessage, loading }) => {
+const InputMessage = ({ input, setInput, sendMessage, loading, session }) => {
   const [isGeneratingQuestion, setIsGeneratingQuestion] = useState(false)
   const [question, setQuestion] = useState(null)
   const [questionError, setQuestionError] = useState(null)
@@ -55,7 +55,7 @@ const InputMessage = ({ input, setInput, sendMessage, loading }) => {
             value={input}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                sendMessage(input)
+                sendMessage(input, session)
                 setInput('')
               }
             }}
@@ -96,7 +96,8 @@ const useMessages = () => {
   const [error, setError] = useState(null);
 
   // send message to API /api/chat endpoint
-  const sendMessage = async (newMessage) => {
+  const sendMessage = async (newMessage, session) => {
+    const { email, image } = session?.user || {};
     setLoading(true)
     setError(null)
     const newMessages = [
@@ -112,6 +113,7 @@ const useMessages = () => {
       },
       body: JSON.stringify({
         messages: last10messages,
+        email: email
       }),
     })
 
@@ -167,7 +169,7 @@ const useMessages = () => {
   }
 }
 
-export default function Chat() {
+export default function Chat({ session }) {
   const [input, setInput] = useState('')
   const [autoScrollEnabled, setAutoScrollEnabled] = useState(true);
   const messagesEndRef = useRef(null);
@@ -227,6 +229,7 @@ export default function Chat() {
           setInput={setInput}
           sendMessage={sendMessage}
           isLoading={loading || isMessageStreaming}
+          session={session}
         />
       </div>
       <Toaster />

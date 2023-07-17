@@ -26,3 +26,16 @@ export async function fetchActiveTable(session) {
         console.error('Request failed:', error);
     }
 }
+
+export async function fetchUpdateBalance(email, new_balance) {
+    fetch("http://localhost:8000/auth/users/balance", {
+        method: "POST",
+        body: JSON.stringify({
+            "email": email,
+            "new_balance": new_balance
+        }),
+        headers: {
+            "content-type": "application/json",
+        },
+    }).catch((e) => console.log(e));
+}

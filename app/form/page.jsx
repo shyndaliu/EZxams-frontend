@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import { motion } from 'framer-motion';
 import DatePicker from '@/components/form/datetimepicker';
 import Balancer from "react-wrap-balancer";
+import TopicForm from '@/components/form/topicsform';
 
 export default function Form() {
     const containerRef = useRef(null);
@@ -82,6 +83,10 @@ export default function Form() {
             </div>
 
             <div id="element2" className="left-[533px] top-[1596px] absolute">
+                <TopicForm />
+            </div>
+
+            {/* <div id="element2" className="left-[533px] top-[1596px] absolute">
                 <div className="w-[616px] h-[272px] left-0 top-0 absolute">
                     <div className="w-[616px] h-[272px] left-0 top-0 absolute bg-neutral-50 rounded-[29px] shadow" />
                     <div className="w-[536px] h-[45px] left-[37px] top-[170px] absolute">
@@ -90,7 +95,7 @@ export default function Form() {
                     </div>
                 </div>
                 <div className="w-[428px] h-[100px] left-[39px] top-[36px] absolute text-purple-900 text-[48px] font-semibold leading-10">First of all, how can i call you?</div>
-            </div>
+            </div> */}
         </div>
     </>
 }
