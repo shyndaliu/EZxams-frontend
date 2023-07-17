@@ -18,7 +18,6 @@ export async function POST(req) {
     },
   ]
   messages.push(...body?.messages)
-
   const payload = {
     model: 'gpt-3.5-turbo',
     messages: messages,

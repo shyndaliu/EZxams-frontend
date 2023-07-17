@@ -105,7 +105,6 @@ const useMessages = () => {
     ]
     setMessages(newMessages)
     const last10messages = newMessages.slice(-10) // remember last 10 messages
-
     const response = await fetch('/api/chat', {
       method: 'POST',
       headers: {

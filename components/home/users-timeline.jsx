@@ -51,20 +51,31 @@ export default function UserTimeline() {
     useEffect(() => {
         const calculateBackgroundElements = () => {
             const colors = ["bg-blur-blue", "bg-blur-pink", "bg-fuchsia-300"];
-            const elementCount = Math.floor(height / 600);; // Adjust 800 to your desired threshold
+            const elementCount = Math.ceil(height / 600);; // Adjust 800 to your desired threshold
             const elements = [];
             for (let i = 0; i < elementCount; i++) {
                 let position = (i % 2) ? "left" : "right";
                 let top = -50 + i * 600;
+                const elementStyle = {
+                    position: "absolute",
+                    [position]: 0,
+                    top: `${top}px`,
+                };
+                const imageContainerStyle = {
+                    position: "absolute",
+                    [position]: 0,
+                    top: `${top}px`
+                };
                 elements.push(
                     <div
                         key={i}
-                        className={`${position}-0 top-[${top}px] absolute ${colors[i % 3]} rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]`}
+                        className={`${colors[i % 3]} rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]`}
+                        style={elementStyle}
                     />
                 );
                 elements.push(
-                    <div className={`${position}-0 top-[${top}px] absolute origin-top-left justify-center items-center inline-flex`}>
-                        <img src={`/form${(i + 1) % 5 + 1}.png`} />
+                    <div className={`origin-top-left justify-center items-center inline-flex`} style={imageContainerStyle}>
+                        <img src={`/form${(i + 1) % 4 + 1}.png`} />
                     </div>
                 )
             }
@@ -113,7 +124,7 @@ export default function UserTimeline() {
             </VerticalTimeline >
         </div >
 
-        {isBgRendered ? <div className="absolute w-full h-[3000px] top-0">{backgroundElements}</div> : null}
+        {backgroundElements}
 
 
         {/* <div className="w-full h-[1800px] top-0 absolute overflow-hidden">
