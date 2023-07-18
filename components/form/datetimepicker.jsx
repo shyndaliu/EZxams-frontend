@@ -19,10 +19,15 @@ Date.prototype.addHours = function (h) {
     return this;
 }
 
-export default function DatePicker() {
+export default function DatePicker({ onChange }) {
+    const handleInputChange = (event) => {
+        const date = event.target.value;
+        onChange(date);
+    };
     return <>
         <input className="bg-gray-200 border-none rounded-2xl" type="datetime-local" id="meeting-time"
-            name="meeting-time"
+            name="deadline"
+            onChange={handleInputChange}
             min={`${fmt(new Date().addHours(2), 'YYYY-MM-DDThh:mm')}`} />
 
     </>

@@ -1,23 +1,35 @@
 'use client';
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import DatePicker from '@/components/form/datetimepicker';
 import Balancer from "react-wrap-balancer";
 import TopicForm from '@/components/form/topicsform';
 import { SparklesIcon } from '@heroicons/react/20/solid';
 
-export default function Form() {
+const Form = ({ setStage }) => {
+    const [selectedDate, setSelectedDate] = useState('');
+
+    const handleDateChange = (date) => {
+        setSelectedDate(date);
+    };
+
     const containerRef = useRef(null);
+    const [topics, setTopics] = useState({});
 
     function scrollToElement(elementId) {
         const element = document.getElementById(elementId);
         if (element) {
             const elementRect = element.getBoundingClientRect();
             const absoluteElementTop = elementRect.top + window.scrollY;
-            const middle = absoluteElementTop - window.innerHeight / 2 + 180;
+            const viewportHeight = Math.max(document.documentElement.clientHeight || 0, window.innerHeight || 0);
+            let middle = absoluteElementTop - (viewportHeight / 2) + (elementRect.height / 2);
+            if (elementId == "element2") {
+                middle += 250;
+            }
             window.scrollTo({ top: middle, behavior: 'smooth' });
         }
     }
+
 
     const variants = {
         jump: {
@@ -30,14 +42,14 @@ export default function Form() {
         }
     }
     return <>
-        <div className="w-full h-[3300px] relative">
-            <div className="w-full h-[3300px] absolute overflow-hidden">
+        <div className="w-full h-[3200px] relative">
+            <div className="w-full h-[3200px] absolute overflow-hidden">
                 <div className="right-[10px] top-[150px] absolute bg-blur-blue rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[120px]" />
                 <div className="left-[10px] md:left-[267px] top-[2580px] absolute bg-blur-blue rounded-full w-[200px] h-[200px] blur-[100px] md:w-[535px] md:h-[518px] md:blur-[150px]" />
                 <div className="left-0 top-[350px] absolute bg-blur-pink rounded-full w-[200px] h-[200px] blur-[100px] md:w-[686px] md:h-[679px] md:blur-[150px]" />
                 <div className="w-[531px] h-[515px] left-[1144px] top-[1700px] absolute bg-fuchsia-300 rounded-full blur-[150px]" />
             </div>
-            <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ delay: 0.3, duration: 0.5 }} className="w-full h-[3200px] top-[100px] absolute overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ delay: 0.3, duration: 0.5 }} className="w-full h-[3100px] top-[100px] absolute overflow-hidden">
                 <div className="w-[486px] h-[633px] left-0 top-[1650px] absolute origin-top-left justify-center items-center inline-flex">
                     <img className="w-[486px] h-[633px]" src="/form3.png" />
                 </div>
@@ -69,10 +81,13 @@ export default function Form() {
             <div id="element1" className="left-[533px] top-[800px] absolute">
                 <div className="bg-neutral-50 rounded-[29px] drop-shadow-xl flex flex-col justify-center w-[616px] px-10 pt-10 pb-5">
                     <p className="text-gray-800 text-5xl py-5">What is your deadline?</p>
-                    <DatePicker></DatePicker>
+                    <DatePicker onChange={handleDateChange} />
                     <button
                         className="flex justify-center items-center w-full p-2 my-10 px-10 my-5 min-w-max text-sm text-center rounded-full backdrop-blur-sm transition-all md:text-base bg-blur-blue/20 hover:bg-blur-blue/80"
-                        onClick={() => scrollToElement('element2')}
+                        onClick={() => {
+                            scrollToElement('element2');
+                            console.log(selectedDate);
+                        }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" height="30" className="inline text-white">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
@@ -82,10 +97,13 @@ export default function Form() {
             </div>
             <div id="element2" className="left-[533px] top-[1596px] absolute">
                 <div className="w-[700px] left-0 top-0 absolute bg-neutral-50 rounded-[29px] shadow flex flex-col justify-center py-5 px-5">
-                    <TopicForm />
+                    <TopicForm topics={topics} setTopics={setTopics} />
                     <button
                         className="flex justify-center items-center w-full p-2 px-10 my-3 min-w-max text-sm text-center rounded-full backdrop-blur-sm transition-all md:text-base bg-blur-blue/20 hover:bg-blur-blue/80"
-                        onClick={() => scrollToElement('element3')}
+                        onClick={() => {
+                            scrollToElement('element3');
+                            console.log(topics);
+                        }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" height="30" className="inline text-white">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19 13l-7 7-7-7m14-8l-7 7-7-7"></path>
@@ -93,7 +111,7 @@ export default function Form() {
                     </button>
                 </div>
             </div>
-            <button id="element3" className="absolute top-[2800px] left-[450px] z-20  flex items-center justify-center space-x-5"
+            <button id="element3" onClick={() => { setStage("loading"); }} className="absolute top-[2800px] left-[450px] z-20  flex items-center justify-center space-x-5"
             >
                 <div
                     className="group flex items-center justify-center space-x-2 rounded-full border px-3 py-1 md:px-10 md:py-8  bg-btn text-sm text-white transition-colors hover:bg-back-white hover:text-btn hover:bg-opacity-5"
@@ -106,5 +124,96 @@ export default function Form() {
                 </div>
             </button>
         </div>
+    </>
+}
+
+const Loading = () => {
+    const [currentStage, setCurrentStage] = useState(0);
+
+    const stages = [
+        {
+            payload: { /* payload for the first stage */ },
+            endpoint: '/api/first-stage',
+        },
+        {
+            payload: { /* payload for the second stage */ },
+            endpoint: '/api/second-stage',
+        },
+        // ...
+    ];
+
+    useEffect(() => {
+        const proceedToNextStage = async () => {
+            if (currentStage === stages.length - 1) {
+                return;
+            }
+            const response = await fetch(stages[currentStage].endpoint, {
+                method: 'POST',
+                body: JSON.stringify(stages[currentStage].payload),
+            });
+            setCurrentStage(currentStage + 1);
+        };
+    }, [currentStage]);
+
+    useEffect(() => {
+        const handleBeforeUnload = (event) => {
+            event.preventDefault();
+            event.returnValue = ''; // Required for Chrome compatibility
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+        };
+    }, []);
+
+    const variants = {
+        jump: {
+            y: [0, -10],
+            transition: {
+                duration: 0.9,
+                repeat: Infinity,
+                repeatType: "reverse"
+            }
+        }
+    }
+    return <>
+        <div>
+            {currentStage === 0 && (
+                <div>
+                    {/* Render the landing page for the first stage */}
+                    Stage 1
+                </div>
+            )}
+
+            {currentStage === 1 && (
+                <div>
+                    {/* Render the landing page for the second stage */}
+                    Stage 2
+                </div>
+            )}
+
+            {/* Repeat the above pattern for each stage */}
+        </div>
+        <div className="w-full h-full absolute overflow-hidden">
+            <motion.div variants={variants}
+                animate={"jump"} className="z-20 w-[398px] h-[624px] right-0 top-[-50px] absolute origin-top-left justify-center items-center inline-flex">
+                <img className="w-[398px] h-[624px]" src="/form2.png" />
+            </motion.div>
+            <motion.div variants={variants}
+                animate={"jump"} className="z-20 w-[457px] h-[529px] left-0 top-[250px] absolute origin-top-left justify-center items-center inline-flex">
+                <img className="w-[457px] h-[529px]" src="/form1.png" />
+            </motion.div>
+            <div className="left-0 top-[350px] absolute bg-blur-pink rounded-full w-[200px] h-[200px] blur-[100px] md:w-[686px] md:h-[679px] md:blur-[150px]" />
+            <div className="right-0  top-0 absolute bg-blur-blue rounded-full w-[200px] h-[200px] blur-[100px] md:w-[535px] md:h-[518px] md:blur-[150px]" />
+        </div>
+    </>
+}
+
+export default function FormPage() {
+    const [stage, setStage] = useState("form")
+    return <>
+        {stage == "form" ? <Form setStage={setStage} /> : <Loading />}
     </>
 }

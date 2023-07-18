@@ -2,8 +2,7 @@ import { StarIcon, TrashIcon } from '@heroicons/react/20/solid';
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const TopicForm = () => {
-    const [topics, setTopics] = useState({});
+const TopicForm = ({ topics, setTopics }) => {
     const [newTopic, setNewTopic] = useState('');
     const [hoveredTopic, setHoveredTopic] = useState(null);
 
@@ -12,7 +11,6 @@ const TopicForm = () => {
             const updatedTopics = { [newTopic]: 0, ...topics };
             setTopics(updatedTopics);
             setNewTopic('');
-            console.log(topics)
         }
     };
     const handleKeyPress = (e) => {
