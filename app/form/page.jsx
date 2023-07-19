@@ -138,6 +138,7 @@ const Loading = () => {
 
     let localEmail = localStorage.getItem('email');
     let localTopics = JSON.parse(localStorage.getItem('topics'));
+    let localTasks = JSON.parse(localStorage.getItem('tasks'));
 
     const stages = [
         {
@@ -153,7 +154,7 @@ const Loading = () => {
 
     useEffect(() => {
         const proceedToNextStage = async () => {
-            if (currentStage === stages.length - 1) {
+            if (currentStage === stages.length) {
                 return;
             }
             const response = await fetch(stages[currentStage].endpoint, {
@@ -168,6 +169,13 @@ const Loading = () => {
                 response.json().then(data => {
                     localStorage.setItem('topics', JSON.stringify(data));
                     localTopics = data;
+                    console.log(data);
+                });
+            } else if (currentStage == 1) {
+                response.json().then(data => {
+                    localStorage.setItem('tasks', JSON.stringify(data));
+                    localTasks = data;
+                    console.log(data);
                 });
             }
             setCurrentStage(currentStage + 1);
@@ -218,6 +226,13 @@ const Loading = () => {
                 <div>
                     {/* Render the landing page for the second stage */}
                     creating task for you, bitch
+                </div>
+            )}
+
+            {currentStage === 2 && (
+                <div>
+                    {/* Render the landing page for the second stage */}
+                    done, bitch
                 </div>
             )}
 

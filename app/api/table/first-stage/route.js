@@ -41,6 +41,7 @@ export async function POST(req) {
     }
 
     let [tokens, res] = await OpenAIDefault(payload);
+
     await fetchUpdateBalance(email, tokens);
 
     try {
@@ -53,10 +54,8 @@ export async function POST(req) {
 
     console.log(topics);
 
-    let response = new Response(JSON.stringify(topics), {
+    return new Response(JSON.stringify(topics), {
         status: 200,
         headers: { 'Content-Type': 'application/json' }
-    });
-
-    return response;
+    });;
 }
