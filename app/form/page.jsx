@@ -16,6 +16,14 @@ const Form = ({ setStage }) => {
     const containerRef = useRef(null);
     const [topics, setTopics] = useState({});
 
+    function saveLocalData() {
+        localStorage.setItem('deadline', JSON.stringify(selectedDate));
+        localStorage.setItem('topics', JSON.stringify(topics));
+        console.log(selectedDate);
+        console.log(topics);
+
+    }
+
     function scrollToElement(elementId) {
         const element = document.getElementById(elementId);
         if (element) {
@@ -86,7 +94,6 @@ const Form = ({ setStage }) => {
                         className="flex justify-center items-center w-full p-2 my-10 px-10 my-5 min-w-max text-sm text-center rounded-full backdrop-blur-sm transition-all md:text-base bg-blur-blue/20 hover:bg-blur-blue/80"
                         onClick={() => {
                             scrollToElement('element2');
-                            console.log(selectedDate);
                         }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" height="30" className="inline text-white">
@@ -102,7 +109,6 @@ const Form = ({ setStage }) => {
                         className="flex justify-center items-center w-full p-2 px-10 my-3 min-w-max text-sm text-center rounded-full backdrop-blur-sm transition-all md:text-base bg-blur-blue/20 hover:bg-blur-blue/80"
                         onClick={() => {
                             scrollToElement('element3');
-                            console.log(topics);
                         }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" aria-hidden="true" height="30" className="inline text-white">
@@ -111,7 +117,7 @@ const Form = ({ setStage }) => {
                     </button>
                 </div>
             </div>
-            <button id="element3" onClick={() => { setStage("loading"); }} className="absolute top-[2800px] left-[450px] z-20  flex items-center justify-center space-x-5"
+            <button id="element3" onClick={() => { saveLocalData(); setStage("loading"); }} className="absolute top-[2800px] left-[450px] z-20  flex items-center justify-center space-x-5"
             >
                 <div
                     className="group flex items-center justify-center space-x-2 rounded-full border px-3 py-1 md:px-10 md:py-8  bg-btn text-sm text-white transition-colors hover:bg-back-white hover:text-btn hover:bg-opacity-5"
@@ -130,14 +136,17 @@ const Form = ({ setStage }) => {
 const Loading = () => {
     const [currentStage, setCurrentStage] = useState(0);
 
+    let localEmail = localStorage.getItem('email');
+    let localTopics = JSON.parse(localStorage.getItem('topics'));
+
     const stages = [
         {
-            payload: { /* payload for the first stage */ },
-            endpoint: '/api/first-stage',
+            payload: { email: localEmail, topics: localTopics },
+            endpoint: '/api/table/first-stage',
         },
         {
-            payload: { /* payload for the second stage */ },
-            endpoint: '/api/second-stage',
+            payload: { email: localEmail, topics: localTopics },
+            endpoint: '/api/table/second-stage',
         },
         // ...
     ];
@@ -151,8 +160,19 @@ const Loading = () => {
                 method: 'POST',
                 body: JSON.stringify(stages[currentStage].payload),
             });
+
+            if (!response.ok) {
+                setCurrentStage(-1);
+            }
+            if (currentStage == 0) {
+                response.json().then(data => {
+                    localStorage.setItem('topics', JSON.stringify(data));
+                    localTopics = data;
+                });
+            }
             setCurrentStage(currentStage + 1);
         };
+        proceedToNextStage();
     }, [currentStage]);
 
     useEffect(() => {
@@ -180,17 +200,24 @@ const Loading = () => {
     }
     return <>
         <div>
+            {currentStage === -1 && (
+                <div>
+                    {/* Render the landing page for the first stage */}
+                    something wrong, bitch
+                </div>
+            )}
+
             {currentStage === 0 && (
                 <div>
                     {/* Render the landing page for the first stage */}
-                    Stage 1
+                    analyzing your topics, bitch
                 </div>
             )}
 
             {currentStage === 1 && (
                 <div>
                     {/* Render the landing page for the second stage */}
-                    Stage 2
+                    creating task for you, bitch
                 </div>
             )}
 

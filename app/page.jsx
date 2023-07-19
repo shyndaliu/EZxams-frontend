@@ -9,7 +9,6 @@ import Roadmap from "@/components/home/roadmap";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
-
   return (
     session !== null ? (
       <Roadmap session={session} />
