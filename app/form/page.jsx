@@ -139,6 +139,7 @@ const Loading = () => {
     let localEmail = localStorage.getItem('email');
     let localTopics = JSON.parse(localStorage.getItem('topics'));
     let localTasks = JSON.parse(localStorage.getItem('tasks'));
+    let localTiming = JSON.parse(localStorage.getItem('timing'));
 
     const stages = [
         {
@@ -149,12 +150,16 @@ const Loading = () => {
             payload: { email: localEmail, topics: localTopics },
             endpoint: '/api/table/second-stage',
         },
+        {
+            payload: { email: localEmail, tasks: localTasks },
+            endpoint: '/api/table/third-stage',
+        },
         // ...
     ];
 
     useEffect(() => {
         const proceedToNextStage = async () => {
-            if (currentStage === stages.length) {
+            if (currentStage === stages.length || currentStage === -1) {
                 return;
             }
             const response = await fetch(stages[currentStage].endpoint, {
@@ -168,14 +173,29 @@ const Loading = () => {
             if (currentStage == 0) {
                 response.json().then(data => {
                     localStorage.setItem('topics', JSON.stringify(data));
-                    localTopics = data;
+                    stages[1].payload.topics = data;
                     console.log(data);
+                }).catch(function () {
+                    console.error();
+                    setCurrentStage(-1);
                 });
             } else if (currentStage == 1) {
                 response.json().then(data => {
                     localStorage.setItem('tasks', JSON.stringify(data));
-                    localTasks = data;
+                    stages[2].payload.tasks = data;
                     console.log(data);
+                }).catch(function () {
+                    console.error();
+                    setCurrentStage(-1);
+                });
+            } else if (currentStage == 2) {
+                response.json().then(data => {
+                    localStorage.setItem('timing', JSON.stringify(data));
+                    localTiming = data;
+                    console.log(data);
+                }).catch(function () {
+                    console.error();
+                    setCurrentStage(-1);
                 });
             }
             setCurrentStage(currentStage + 1);
@@ -230,6 +250,12 @@ const Loading = () => {
             )}
 
             {currentStage === 2 && (
+                <div>
+                    {/* Render the landing page for the second stage */}
+                    timing for you, bitch
+                </div>
+            )}
+            {currentStage === 3 && (
                 <div>
                     {/* Render the landing page for the second stage */}
                     done, bitch
