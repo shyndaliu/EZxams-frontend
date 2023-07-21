@@ -141,17 +141,16 @@ const Loading = () => {
     let localTasks = JSON.parse(localStorage.getItem('tasks'));
     let localTiming = JSON.parse(localStorage.getItem('timing'));
 
+    const [payload, setPayload] = useState({ email: localEmail, topics: localTopics });
+
     const stages = [
         {
-            payload: { email: localEmail, topics: localTopics },
             endpoint: '/api/table/first-stage',
         },
         {
-            payload: { email: localEmail, topics: localTopics },
             endpoint: '/api/table/second-stage',
         },
         {
-            payload: { email: localEmail, tasks: localTasks },
             endpoint: '/api/table/third-stage',
         },
         // ...
@@ -164,7 +163,7 @@ const Loading = () => {
             }
             const response = await fetch(stages[currentStage].endpoint, {
                 method: 'POST',
-                body: JSON.stringify(stages[currentStage].payload),
+                body: JSON.stringify(payload),
             });
 
             if (!response.ok) {
@@ -173,8 +172,9 @@ const Loading = () => {
             if (currentStage == 0) {
                 response.json().then(data => {
                     localStorage.setItem('topics', JSON.stringify(data));
-                    stages[1].payload.topics = data;
+                    setPayload({ email: localEmail, topics: data })
                     console.log(data);
+                    console.log(payload);
                 }).catch(function () {
                     console.error();
                     setCurrentStage(-1);
@@ -182,8 +182,9 @@ const Loading = () => {
             } else if (currentStage == 1) {
                 response.json().then(data => {
                     localStorage.setItem('tasks', JSON.stringify(data));
-                    stages[2].payload.tasks = data;
+                    setPayload({ email: localEmail, tasks: data })
                     console.log(data);
+                    console.log(payload);
                 }).catch(function () {
                     console.error();
                     setCurrentStage(-1);
@@ -191,7 +192,6 @@ const Loading = () => {
             } else if (currentStage == 2) {
                 response.json().then(data => {
                     localStorage.setItem('timing', JSON.stringify(data));
-                    localTiming = data;
                     console.log(data);
                 }).catch(function () {
                     console.error();
@@ -201,7 +201,7 @@ const Loading = () => {
             setCurrentStage(currentStage + 1);
         };
         proceedToNextStage();
-    }, [currentStage]);
+    }, [payload]);
 
     useEffect(() => {
         const handleBeforeUnload = (event) => {

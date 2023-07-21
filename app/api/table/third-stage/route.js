@@ -26,6 +26,8 @@ export async function POST(req) {
     let user_balance = await fetchCheckBalance(email);
     console.log(`user's balance is2: ${user_balance}`);
 
+    console.log(`user's payload: ${JSON.stringify(body)}`)
+
     if (user_balance > 1000000) {
         return new Response('Token limit is exceeded', {
             status: 402
@@ -49,7 +51,18 @@ export async function POST(req) {
 
     [tokens, res] = await OpenAIDefault(payload);
 
+    if (typeof tokens !== "number") {
+        setTimeout(async function () {
+            [tokens, res] = await OpenAIDefault(payload);
+        }, 30000);
+    }
+
     await fetchUpdateBalance(email, tokens);
+
+    const re = /\{.*\}/;
+    res = res.match(re)[0];
+
+    console.log(res, tokens);
 
     try {
         timing = JSON.parse(res)

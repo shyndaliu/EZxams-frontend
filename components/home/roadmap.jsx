@@ -8,6 +8,7 @@ import RoadmapLanding from "./roadmap-landing";
 
 export default function Roadmap({ session }) {
     let activeTable;
+    console.log(session);
     const { email, image } = session?.user || {};
     useEffect(() => {
         localStorage.setItem('email', email)
@@ -15,6 +16,7 @@ export default function Roadmap({ session }) {
         activeTable = fetchActiveTable(session);
     }, []);
     activeTable = { "table": "dfsdfsd" };
+    // check authorization?->get table
     return (
         <>
             {activeTable ? <UserTimeline /> : <RoadmapLanding />}

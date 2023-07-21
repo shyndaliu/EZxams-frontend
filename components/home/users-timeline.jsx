@@ -85,7 +85,6 @@ export default function UserTimeline() {
         };
         if (height != 0 && isBgRendered == false) {
             calculateBackgroundElements();
-            console.log(height);
         }
     }, [height]);
 
