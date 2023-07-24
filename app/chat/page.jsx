@@ -4,5 +4,6 @@ import { authOptions } from "@/lib/authOptions";
 
 export default async function AiChat() {
     const session = await getServerSession(authOptions);
-    return <Chat session={session} />
+    const session_data = { "user": session?.token?.token?.user }
+    return <Chat session={session_data} />
 }

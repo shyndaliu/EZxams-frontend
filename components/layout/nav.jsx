@@ -4,5 +4,6 @@ import { authOptions } from "@/lib/authOptions";
 
 export default async function Nav() {
   const session = await getServerSession(authOptions);
-  if (session) { return <Navbar session={session} />; }
+  const session_data = { "user": session?.token?.token?.user }
+  if (session) { return <Navbar session={session_data} />; }
 }

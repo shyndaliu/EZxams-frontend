@@ -9,9 +9,10 @@ import Roadmap from "@/components/home/roadmap";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
+  const session_data = { "user": session?.token?.token?.user }
   return (
     session !== null ? (
-      <Roadmap session={session} />
+      <Roadmap session={session_data} />
     ) : (
       <Landing />
     )
