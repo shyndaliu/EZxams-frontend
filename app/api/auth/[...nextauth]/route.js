@@ -19,27 +19,19 @@ const handler = NextAuth({
                     scope:
                         "https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
                     authorizationUrl:
-                        `https://accounts.google.com/o/oauth2/v2/auth?${queryParams}`,
+                        `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&access_type=offline&prompt=consent`,
+                    accessTokenUrl: 'https://oauth2.googleapis.com/token'
                 },
             },
         }),
     ],
     callbacks: {
-
-        async jwt(token, user, account, profile, isNewUser) {
-
-            if (account?.accessToken) {
-                token.accessToken = account.accessToken;
-            }
+        async jwt(token) {
             console.log(token);
             return token;
         },
         async session(session, token) {
-            session.user = {
-                name: token.name,
-                email: token.email,
-                image: token.image,
-            };
+
             return session;
         },
     },

@@ -9,8 +9,8 @@ export default function CalTest() {
     useEffect(async () => {
         console.log('test');
         if (loading) {
-            const { data } = await axios.get('/api/calendar/calendars', {
-                withCredentials: true,
+            const data = await fetch("api/calendar", {
+                method: 'GET'
             });
             console.log(data);
             setSubsList(
