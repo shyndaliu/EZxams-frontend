@@ -15,7 +15,7 @@ export default function Roadmap({ session }) {
         fetchSignIn(session);
         activeTable = fetchActiveTable(session);
     }, []);
-    activeTable = { "table": "dfsdfsd" };
+    //activeTable = { "table": "dfsdfsd" };
     // check authorization?->get table
     return (
         <>

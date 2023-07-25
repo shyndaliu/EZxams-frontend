@@ -56,3 +56,18 @@ export async function fetchUpdateBalance(email, new_balance) {
         },
     }).catch((e) => console.log(e));
 }
+
+export async function fetchCreateTable(email, body, description, deadline) {
+    fetch("http://localhost:8000/tables", {
+        method: "POST",
+        body: JSON.stringify({
+            "email": email,
+            "body": body,
+            "description": description,
+            "deadline": deadline
+        }),
+        headers: {
+            "content-type": "application/json",
+        },
+    }).catch((e) => console.log(e));
+}

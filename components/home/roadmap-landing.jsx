@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 
 export default function RoadmapLanding() {
     return <><motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
-        className="z-10 w-full max-w-[70%] h-full max-h-[60%] px-5 xl:px-0"
+        className="z-10 w-full max-w-[70%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0"
     >
         <div className="w-full flex flex-col justify-around items-center">
             <h1
