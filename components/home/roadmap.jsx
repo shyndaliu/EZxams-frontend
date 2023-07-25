@@ -13,7 +13,6 @@ export default function Roadmap({ session }) {
     useEffect(() => {
         localStorage.setItem('email', email)
         fetchSignIn(session);
-        activeTable = fetchActiveTable(session);
     }, []);
     //activeTable = { "table": "dfsdfsd" };
     // check authorization?->get table

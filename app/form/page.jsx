@@ -5,6 +5,7 @@ import DatePicker from '@/components/form/datetimepicker';
 import Balancer from "react-wrap-balancer";
 import TopicForm from '@/components/form/topicsform';
 import { SparklesIcon } from '@heroicons/react/20/solid';
+import { outfitTitle } from "@/app/fonts";
 
 const Form = ({ setStage }) => {
     const [selectedDate, setSelectedDate] = useState('');
@@ -134,7 +135,7 @@ const Form = ({ setStage }) => {
 }
 
 const Loading = () => {
-    const [currentStage, setCurrentStage] = useState(0);
+    const [currentStage, setCurrentStage] = useState(-2);
 
     let localEmail = localStorage.getItem('email');
     let localTopics = JSON.parse(localStorage.getItem('topics'));
@@ -158,7 +159,7 @@ const Loading = () => {
 
     useEffect(() => {
         const proceedToNextStage = async () => {
-            if (currentStage === stages.length || currentStage === -1) {
+            if (currentStage === stages.length || currentStage === -1 || currentStage === -2) {
                 return;
             }
             const response = await fetch(stages[currentStage].endpoint, {
@@ -228,6 +229,24 @@ const Loading = () => {
     }
     return <>
         <div>
+            {currentStage === -2 && (
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[90%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
+                        >
+                            <Balancer>Oops... We are not ready yet!</Balancer>
+                        </h1>
+                        <h1
+                            className={` text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
+                        >
+                            stay tuned
+                        </h1>
+                    </div>
+                </motion.div >
+            )}
             {currentStage === -1 && (
                 <div>
                     {/* Render the landing page for the first stage */}
