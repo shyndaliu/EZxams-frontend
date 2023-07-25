@@ -237,7 +237,7 @@ const Loading = () => {
                         <h1
                             className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
                         >
-                            <Balancer>Oops... We are not ready yet!</Balancer>
+                            <Balancer>Oops... We are not ready yet</Balancer>
                         </h1>
                         <h1
                             className={` text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
