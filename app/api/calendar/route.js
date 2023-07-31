@@ -335,7 +335,7 @@ export async function POST(req, res) {
         "max_tokens": 2000
     }
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     [tokens, tableForDBDescription] = await OpenAIDefault(payload);
 
