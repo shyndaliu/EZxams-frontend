@@ -99,7 +99,7 @@ export async function POST(req) {
 
     // console.log(tasks);
 
-    await new Promise((resolve) => setTimeout(resolve, 4000));
+    await new Promise((resolve) => setTimeout(resolve, 6000));
 
     return new Response(JSON.stringify(tasks), {
         status: 200,
