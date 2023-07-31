@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:vercel": "CI=false next build",
     "format:write": "prettier --write \"**/*.{css,js,json,jsx}\"",
     "format": "prettier \"**/*.{css,js,json,jsx}\"",
     "start": "next start",
