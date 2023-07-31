@@ -4,93 +4,94 @@ import { VerticalTimelineElement, VerticalTimeline } from "react-vertical-timeli
 import './style.min.css'
 import { MapPinIcon, SparklesIcon, FireIcon, RocketLaunchIcon, HeartIcon, StarIcon, TrophyIcon } from "@heroicons/react/20/solid";
 
-export default function UserTimeline() {
-    // const icons = [<SparklesIcon />, <FireIcon />, <RocketLaunchIcon />, <HeartIcon />, <StarIcon />]
-    // const table = {
-    //     "24.06":
-    //         { "4PM-4.30PM": "Introductory reading on Pigeonhole Principle", "4.30PM-5PM": "Practice easy problems involving Pigeonhole Principle", "5PM-6PM": "Do some tough problems and validate concepts" },
-    //     "25.06":
-    //         { "3PM-3.20PM": "Start by recapping fundamental concepts of Permutations and Combinations", "3.20PM-4.05PM": "Revise formulas periodically", "4.05PM-5.05PM": "Apply formulas to problems, Difficulty level to be increased gradually as you master each level", "6PM-6.30PM": "Learn the fundamentals and formulas of Binomial Theorem", "6.30PM-8PM": "Practice expressive problems and numerical exercies", "8PM-8.10PM": "Solve tough problems to confirm competence attained." }
-    // }
-    // const description = {
-    //     "24.06": { "4PM-4.30PM": "To gain understanding of the Pigeonhole Principle, start by reading introductory materials.", "4.30PM-5PM": "Boost your confidence levels by solving easy problems that involve the application of the Pigeonhole Principle.", "5PM-6PM": "Take on the challenge by attempting tougher problems and verifying your concept comprehension." },
-    //     "25.06":
-    //         { "3PM-3.20PM": "Begin by reviewing the fundamental concepts of Permutations and Combinations to refresh your memory.", "3.20PM-4.05PM": "Ensure concept retention by periodically revising the formulas.", "4.05PM-5.05PM": "Gradually enhance the difficulty level of the problems as you gain mastery over each level.", "6PM-6.30PM": "Absorb the fundamentals and formulas of the Binomial Theorem.", "6.30PM-8PM": "Boost your problem-solving capabilities through extensive practice, including both word problems and numerical exercises.", "8PM-8.10PM": "Assert your acquired competence by tackling tough problems." }
-    // }
-    // let timeline = []
-    // timeline.push({
-    //     title: 'Your Personal Roadmap',
-    //     desc: 'Watch your progress based on generated table right here!',
-    // })
-    // for (let date in table) {
-    //     for (let hour in table[date]) {
-    //         let payload = {
-    //             "date": date + ", " + hour,
-    //             "title": table[date][hour],
-    //             "desc": description[date][hour]
-    //         }
-    //         timeline.push(payload)
-    //     }
-    // }
-    // timeline.push({
-    //     title: 'Finish line!'
-    // })
-    // let length = timeline.length;
+function toDate(date, interval) {
+    const [day, month] = date.split(".");
+    const [startOfInterval, endOfInterval] = interval.split("-");
+    const [hour, minute] = endOfInterval.split(":");
+    const year = (new Date).getFullYear();
+    const newDate = new Date(year, month - 1, day, hour, minute);
+    return newDate;
+}
+
+export default function UserTimeline({ table, description }) {
+    const icons = [<SparklesIcon />, <FireIcon />, <RocketLaunchIcon />, <HeartIcon />, <StarIcon />]
+    let timeline = []
+    timeline.push({
+        title: 'Your Personal Roadmap',
+        desc: 'Watch your progress based on generated table right here!',
+    })
+    for (let date in table) {
+        for (let hour in table[date]) {
+            const realDate = toDate(date, hour);
+            if (realDate < new Date) {
+                continue;
+            }
+            let payload = {
+                "date": date + ", " + hour,
+                "title": table[date][hour],
+                "desc": description[date][hour]
+            }
+            timeline.push(payload)
+        }
+    }
+    timeline.push({
+        title: 'Finish line!'
+    })
+    let length = timeline.length;
 
 
-    // const [height, setHeight] = useState(0);
-    // const [backgroundElements, setBackgroundElements] = useState([]);
-    // const [isBgRendered, SetIsBgRendered] = useState(false);
+    const [height, setHeight] = useState(0);
+    const [backgroundElements, setBackgroundElements] = useState([]);
+    const [isBgRendered, SetIsBgRendered] = useState(false);
 
-    // const timelineRef = useRef(null);
+    const timelineRef = useRef(null);
 
-    // useEffect(() => {
-    //     setHeight(timelineRef.current.clientHeight)
-    // });
+    useEffect(() => {
+        setHeight(timelineRef.current.clientHeight)
+    });
 
-    // useEffect(() => {
-    //     const calculateBackgroundElements = () => {
-    //         const colors = ["bg-blur-blue", "bg-blur-pink", "bg-fuchsia-300"];
-    //         const elementCount = Math.ceil(height / 600);; // Adjust 800 to your desired threshold
-    //         const elements = [];
-    //         for (let i = 0; i < elementCount; i++) {
-    //             let position = (i % 2) ? "left" : "right";
-    //             let top = -50 + i * 600;
-    //             const elementStyle = {
-    //                 position: "absolute",
-    //                 [position]: 0,
-    //                 top: `${top}px`,
-    //             };
-    //             const imageContainerStyle = {
-    //                 position: "absolute",
-    //                 [position]: 0,
-    //                 top: `${top}px`
-    //             };
-    //             elements.push(
-    //                 <div
-    //                     key={i}
-    //                     className={`${colors[i % 3]} rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]`}
-    //                     style={elementStyle}
-    //                 />
-    //             );
-    //             elements.push(
-    //                 <div className={`origin-top-left justify-center items-center inline-flex`} style={imageContainerStyle}>
-    //                     <img src={`/form${(i + 1) % 4 + 1}.png`} />
-    //                 </div>
-    //             )
-    //         }
+    useEffect(() => {
+        const calculateBackgroundElements = () => {
+            const colors = ["bg-blur-blue", "bg-blur-pink", "bg-fuchsia-300"];
+            const elementCount = Math.ceil(height / 600);; // Adjust 800 to your desired threshold
+            const elements = [];
+            for (let i = 0; i < elementCount; i++) {
+                let position = (i % 2) ? "left" : "right";
+                let top = -50 + i * 600;
+                const elementStyle = {
+                    position: "absolute",
+                    [position]: 0,
+                    top: `${top}px`,
+                };
+                const imageContainerStyle = {
+                    position: "absolute",
+                    [position]: 0,
+                    top: `${top}px`
+                };
+                elements.push(
+                    <div
+                        key={i}
+                        className={`${colors[i % 3]} rounded-full w-[200px] h-[200px] blur-[100px] md:w-[400px] md:h-[400px] md:blur-[150px]`}
+                        style={elementStyle}
+                    />
+                );
+                elements.push(
+                    <div className={`origin-top-left justify-center items-center inline-flex`} style={imageContainerStyle}>
+                        <img src={`/form${(i + 1) % 4 + 1}.png`} />
+                    </div>
+                )
+            }
 
-    //         setBackgroundElements(elements);
-    //         SetIsBgRendered(true);
-    //     };
-    //     if (height != 0 && isBgRendered == false) {
-    //         calculateBackgroundElements();
-    //     }
-    // }, [height]);
+            setBackgroundElements(elements);
+            SetIsBgRendered(true);
+        };
+        if (height != 0 && isBgRendered == false) {
+            calculateBackgroundElements();
+        }
+    }, [height]);
 
     return <>
-        <h1>currently disabled</h1>
-        {/* < div className="z-20 w-full pt-[5%]" ref={timelineRef}>
+        < div className="z-20 w-full pt-[5%]" ref={timelineRef}>
             <VerticalTimeline className="z-25" >
                 {timeline.map((t, i) => {
                     const contentStyle =
@@ -124,7 +125,7 @@ export default function UserTimeline() {
             </VerticalTimeline >
         </div >
 
-        {backgroundElements} */}
+        {backgroundElements}
 
 
         {/* <div className="w-full h-[1800px] top-0 absolute overflow-hidden">

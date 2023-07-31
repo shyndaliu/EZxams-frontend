@@ -97,7 +97,6 @@ const useMessages = () => {
 
   // send message to API /api/chat endpoint
   const sendMessage = async (newMessage, session) => {
-    console.log(session);
     const { email, image } = session?.user || {};
     setLoading(true)
     setError(null)

@@ -20,9 +20,6 @@ const Form = ({ setStage }) => {
     function saveLocalData() {
         localStorage.setItem('deadline', JSON.stringify(selectedDate));
         localStorage.setItem('topics', JSON.stringify(topics));
-        console.log(selectedDate);
-        console.log(topics);
-
     }
 
     function scrollToElement(elementId) {
@@ -135,9 +132,10 @@ const Form = ({ setStage }) => {
 }
 
 const Loading = () => {
-    const [currentStage, setCurrentStage] = useState(-2);
+    const [currentStage, setCurrentStage] = useState(0);
 
     let localEmail = localStorage.getItem('email');
+    let localDeadline = localStorage.getItem('deadline');
     let localTopics = JSON.parse(localStorage.getItem('topics'));
     let localTasks = JSON.parse(localStorage.getItem('tasks'));
     let localTiming = JSON.parse(localStorage.getItem('timing'));
@@ -154,12 +152,15 @@ const Loading = () => {
         {
             endpoint: '/api/table/third-stage',
         },
+        {
+            endpoint: '/api/calendar',
+        },
         // ...
     ];
 
     useEffect(() => {
         const proceedToNextStage = async () => {
-            if (currentStage === stages.length || currentStage === -1 || currentStage === -2) {
+            if (currentStage === stages.length || currentStage < 0) {
                 return;
             }
             const response = await fetch(stages[currentStage].endpoint, {
@@ -167,25 +168,34 @@ const Loading = () => {
                 body: JSON.stringify(payload),
             });
 
+            // console.log(response);
+
             if (!response.ok) {
-                setCurrentStage(-1);
+                if (response.status == 401) {
+                    setCurrentStage(-3);
+                }
+                if (response.status == 429) {
+                    setCurrentStage(-2);
+                }
+                if (response.status == 400) {
+                    setCurrentStage(-1);
+                }
+                if (response.status == 402) {
+                    setCurrentStage(-4);
+                }
+                return;
             }
             if (currentStage == 0) {
                 response.json().then(data => {
                     localStorage.setItem('topics', JSON.stringify(data));
                     setPayload({ email: localEmail, topics: data })
-                    console.log(data);
-                    console.log(payload);
                 }).catch(function () {
-                    console.error();
                     setCurrentStage(-1);
                 });
             } else if (currentStage == 1) {
                 response.json().then(data => {
                     localStorage.setItem('tasks', JSON.stringify(data));
                     setPayload({ email: localEmail, tasks: data })
-                    console.log(data);
-                    console.log(payload);
                 }).catch(function () {
                     console.error();
                     setCurrentStage(-1);
@@ -193,7 +203,8 @@ const Loading = () => {
             } else if (currentStage == 2) {
                 response.json().then(data => {
                     localStorage.setItem('timing', JSON.stringify(data));
-                    console.log(data);
+                    let tasks = payload?.tasks
+                    setPayload({ deadline: localDeadline, tasks: tasks, timing: data })
                 }).catch(function () {
                     console.error();
                     setCurrentStage(-1);
@@ -228,57 +239,159 @@ const Loading = () => {
         }
     }
     return <>
-        <div>
-            {currentStage === -2 && (
+        <div className='z-20'>
+            {currentStage === -4 && (
                 <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
-                    className="z-20 w-full max-w-[90%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0"
+                    className="z-20 w-full max-w-[70%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
                 >
                     <div className="w-full flex flex-col justify-around items-center">
                         <h1
                             className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
                         >
-                            <Balancer>Oops... We are not ready yet</Balancer>
+                            token limit is exceeded
+                        </h1>
+                        <h1
+                            className={`max-w-[80%] text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
+                        >
+                            we would like to provide our services to everyone, but we are limited by financial resources. if you are interested in support, contact us.
+                        </h1>
+                    </div>
+                </motion.div >
+            )}
+            {currentStage === -3 && (
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[60%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
+                        >
+                            authorization problem
                         </h1>
                         <h1
                             className={` text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
                         >
-                            stay tuned
+                            How to fix it?<br />
+
+                            sign out &#8594; visit <a href="https://myaccount.google.com/connections?continue=https%3A%2F%2Fmyaccount.google.com%2Fsecurity%3Fhl%3Dru&hl=ru" className='text-title-violet/50 hover:text-title-violet/80'>this</a> link &#8594; find "EZxams" and revoke access &#8594; sign in and try again
+                        </h1>
+                    </div>
+                </motion.div >
+            )}
+            {currentStage === -2 && (
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[60%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
+                        >
+                            omg, too many requests:(
+                        </h1>
+                        <h1
+                            className={` text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
+                        >
+                            we use OpenAi's free account, so it will happen sometimes. if you are interested in support, contact us
                         </h1>
                     </div>
                 </motion.div >
             )}
             {currentStage === -1 && (
                 <div>
-                    {/* Render the landing page for the first stage */}
-                    something wrong, bitch
+                    <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                        className="z-20 w-full max-w-[90%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                    >
+                        <div className="w-full flex flex-col justify-around items-center">
+                            <h1
+                                className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
+                            >
+                                <Balancer>oops... something went wrong</Balancer>
+                            </h1>
+                            <h1
+                                className={`max-w-[60%] text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
+                            >
+                                we use generative AI, so responses are not always perfect. please, try again and thank you for your patience!
+                            </h1>
+                        </div>
+                    </motion.div >
                 </div>
             )}
 
             {currentStage === 0 && (
-                <div>
-                    {/* Render the landing page for the first stage */}
-                    analyzing your topics, bitch
-                </div>
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[60%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-2`}
+                        >
+                            analyzing your topics
+                        </h1>
+                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                    </div>
+                </motion.div >
             )}
 
             {currentStage === 1 && (
-                <div>
-                    {/* Render the landing page for the second stage */}
-                    creating task for you, bitch
-                </div>
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[60%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-2`}
+                        >
+                            creating task for you
+                        </h1>
+                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                    </div>
+                </motion.div >
             )}
 
             {currentStage === 2 && (
-                <div>
-                    {/* Render the landing page for the second stage */}
-                    timing for you, bitch
-                </div>
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[60%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-2`}
+                        >
+                            estimating the time
+                        </h1>
+                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                    </div>
+                </motion.div >
             )}
             {currentStage === 3 && (
-                <div>
-                    {/* Render the landing page for the second stage */}
-                    done, bitch
-                </div>
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[70%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-2`}
+                        >
+                            last steps, and...
+                        </h1>
+                        <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+                    </div>
+                </motion.div >
+            )}
+            {currentStage === 4 && (
+                <motion.div initial={{ opacity: 0, y: 0 }} animate={{ opacity: 1, y: -15 }} transition={{ duration: 0.5 }}
+                    className="z-20 w-full max-w-[60%] h-full max-h-[60%] mt-[5%] px-5 xl:px-0 mx-auto"
+                >
+                    <div className="w-full flex flex-col justify-around items-center">
+                        <h1
+                            className={`${outfitTitle.className} text-title-violet text-center font-display text-4xl tracking-[-0.02em] drop-shadow-sm md:text-8xl md:leading-[6rem] pb-5`}
+                        >
+                            Done! Good luck on exams!
+                        </h1>
+                        <h1
+                            className={` text-title-violet/80 text-center font-display text-2xl tracking-[-0.02em] drop-shadow-sm md:text-3xl `}
+                        >
+                            you can check your schedule on <a href="/" className='text-title-violet/50 hover:text-title-violet/80'>main page</a> or in your <a href="https://calendar.google.com/" className='text-title-violet/50 hover:text-title-violet/80'>Google Calendar</a>
+                        </h1>
+                    </div>
+                </motion.div >
             )}
 
             {/* Repeat the above pattern for each stage */}

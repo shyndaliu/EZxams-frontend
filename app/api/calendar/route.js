@@ -1,7 +1,7 @@
 import { getToken } from 'next-auth/jwt';
 import { jsonrepair } from 'jsonrepair';
 import { listAllCalendars, listAllEvents, createCalendar, addEvent } from './calendar-api';
-import { fetchCreateTable, fetchUpdateBalance } from '../auth/[...nextauth]/testroute';
+import { fetchCreateTable, fetchUpdateBalance, fetchCheckBalance } from '../auth/[...nextauth]/testroute';
 import { OpenAIDefault } from '@/lib/OpenAIDefault';
 
 
@@ -79,7 +79,10 @@ function calculateAvailableTimeSlots(events, startTime, deadline) {
         start: toUTCString(startP), end: toUTCString(endP)
     })
 
-    while (currentDay.getDate() < new Date(deadline).getDate()) {
+    let endDay = new Date(deadline);
+    endDay.setHours(0, 0, 0);
+
+    while (currentDay < endDay) {
         startP = new Date(currentDay);
         startP.setHours(23);
         endP = new Date(currentDay);
@@ -108,16 +111,19 @@ function calculateAvailableTimeSlots(events, startTime, deadline) {
         return aStartDateTime - bStartDateTime;
     });
 
-    console.log(events);
+
 
     let newTable = [];
     let i = 0, j = 1;
-    while (j < events.length) {
+    while (j < events.length && i < events.length) {
         let end = new Date(events[i].end);
         let start = new Date(events[j].start);
         while (start <= end) {
             i++;
             j = i + 1;
+            if (i >= events.length || j >= events.length) {
+                return newTable;
+            }
             end = new Date(events[i].end);
             start = new Date(events[j].start);
         }
@@ -159,11 +165,10 @@ function convertSchedule(schedule, userTimeZone) {
     for (const date in schedule) {
         for (const time in schedule[date]) {
             const event = schedule[date][time];
-            const [startTime, endTime] = time.split("-");
-
             const [day, month] = date.split('.');
-
+            const [startTime, endTime] = time.split("-");
             let [hour, minute] = startTime.split(':');
+
             const startDate = new Date(currentYear, month - 1, day, hour, minute);
 
             [hour, minute] = endTime.split(':');
@@ -200,22 +205,32 @@ function convertSchedule2(schedule) {
 
 export async function POST(req, res) {
     let body = await req.json();
-    console.log(body);
     const token = await getToken({ req });
-    console.log(token);
-    const accessToken = token.account.access_token;
+    const accessToken = token?.account?.access_token;
+
+    let user_balance = await fetchCheckBalance(token.user.email);
+
+    if (user_balance > 100000) {
+        return new Response('Token limit is exceeded', {
+            status: 402
+        });
+    }
 
     let data = await listAllCalendars(accessToken);
+    if (!data.items) {
+        return new Response("User is unauthenticated", {
+            status: 401,
+            headers: { 'Content-Type': 'text/html' }
+        });
+    }
     data = data.items;
     let userTimeZone = data[0].timeZone;
     let calendars = data.map(calendar => ({ "id": calendar.id, "name": calendar.summary }));
-    console.log(calendars); //console
 
 
     let allEvents = [];
     for (let calendar in calendars) {
         let response = await listAllEvents(accessToken, calendars[calendar].id);
-        console.log(calendars[calendar].id);
         if (!response.items) {
             continue;
         }
@@ -224,25 +239,22 @@ export async function POST(req, res) {
         events = events.map(event => ({ "start": event.start.dateTime.substring(0, 19), "end": event.end.dateTime.substring(0, 19) }))
         allEvents = allEvents.concat(events);
     }
-    console.log(allEvents);
+
 
     let currentTime = new Date();
     currentTime.setHours(currentTime.getHours() + 1, 0, 0);
     currentTime = toUTCString(currentTime);
-    const deadline = '2023-07-28T09:00:00';
+    let deadline = body.deadline;
+    deadline = deadline.substring(1, deadline.length - 1);
 
 
-    const upcomingEvents = extractUpcomingEvents(allEvents, currentTime, deadline);
-    console.log(upcomingEvents);
+    const upcomingEvents = extractUpcomingEvents(allEvents, currentTime, deadline + ":00");
 
-    const freeTime = calculateAvailableTimeSlots(upcomingEvents, currentTime, deadline);
-    console.log(freeTime);
+
+    const freeTime = calculateAvailableTimeSlots(upcomingEvents, currentTime, deadline + ":00");
+
 
     const formattedFreeTime = formatTimeIntervals(freeTime);
-
-    let ezxamsCalendarID = await createCalendar(accessToken, calendars, userTimeZone);
-    ezxamsCalendarID = ezxamsCalendarID.id;
-
 
 
     let payload = {
@@ -271,63 +283,90 @@ export async function POST(req, res) {
 
 
     let [tokens, table] = await OpenAIDefault(payload);
-
     if (typeof tokens !== "number") {
-        setTimeout(async function () {
-            [tokens, table] = await OpenAIDefault(payload);
-        }, 30000);
+        return new Response("Too many requests", {
+            status: 429,
+            headers: { 'Content-Type': 'text/html' }
+        });
     }
-    console.log(table);
     await fetchUpdateBalance(token.user.email, tokens);
 
     try {
         table = jsonrepair(table)
-        console.log(table)
     } catch (err) {
-        console.error(err)
-    }
-    const tableForEvents = convertSchedule(JSON.parse(table), userTimeZone);
-    console.log(tableForEvents);
-    for (let event in tableForEvents) {
-        console.log(tableForEvents[event]);
-        await addEvent(accessToken, ezxamsCalendarID, tableForEvents[event]);
+        return new Response("Something went wrong.", {
+            status: 400,
+            headers: { 'Content-Type': 'text/html' }
+        });
     }
 
-    const tableForDB = convertSchedule2(table);
-    console.log(tableForDB);
+
+    let tableForEvents;
+    try {
+        tableForEvents = convertSchedule(JSON.parse(table), userTimeZone);
+    } catch (error) {
+        console.error(error);
+        return new Response("Something went wrong.", {
+            status: 400,
+            headers: { 'Content-Type': 'text/html' }
+        });
+    }
+
+
+
+    const tableForDB = convertSchedule2(JSON.parse(table));
     let tableForDBDescription;
+
 
     payload = {
         "model": "text-davinci-003",
-        "prompt": `I want you to act as a teacher who is great at explaining tasks and giving motivation. I will give you my timetable with tasks like this:
-        "23.06:
-        {4PM-4.30PM: "Quick review of basic concepts", 4.30PM-4.45PM: "Learn basic concepts first", 4.45PM-5.30PM: "Practice finding partial derivatives of simple functions", 6PM-7PM: "As you gain more confidence, move on medium problems", 7PM-7.15PM: "Test you knowledge"}
+        "prompt": `You are assistant who speaks only JSON. I will give you my timetable with tasks like this:
+        "{'23.06':
+        {'16:00-16:30': "Quick review of basic concepts", '16:30-16:45': "Learn basic concepts first", '16:45-17:30': "Practice finding partial derivatives of simple functions", '18:00-19:00': "As you gain more confidence, move on medium problems", '19:00-19:15': "Test you knowledge"}
         }"
-        You must return me the same table, but replace every task with an advise or motivation like this:
-        "23.06:
-        {4PM-4.30PM: "It is okay to spend more time on topics, that you are not familiar with.", 4.30PM-4.45PM: "Underline the hardest topics and try to understand them better", 4.45PM-5.30PM: "It is always better to practice on simple examples first", 6PM-7PM: "Don't be upset if it's still hard for you, just return to simple examples and try understand what causes a problem", 7PM-7.15PM: "Be strict, but no harsh to yourself"}
+        You must return me the same table as a JSON formatted string, but replace every task with an advise or motivation like this:
+        "{'23.06':
+        {'16:00-16:30': "It is okay to spend more time on topics, that you are not familiar with.", '16:30-16:45': "Underline the hardest topics and try to understand them better",  '16:45-17:30': "It is always better to practice on simple examples first", '18:00-19:00': "Don't be upset if it's still hard for you, just return to simple examples and try understand what causes a problem", '19:00-19:15': "Be strict, but no harsh to yourself"}
         }"
-        (You should adapt the sample timetable according to the plan that i gave. The plan should be self-explanatory, motivational, written with friendly tone like a teacher to his student, don't refer to the example I gave you.).
+        (You should adapt the sample timetable according to the plan that i gave. The plan should be self-explanatory, motivational, written with friendly tone, don't refer to the example I gave you.).
         Here is my plan:
-        "${tableForDB}" (give me altered plan only)`,
+        "${JSON.stringify(tableForDB)}" (give me altered plan only)`,
         "temperature": 1.3,
         "max_tokens": 2000
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 15000));
+
     [tokens, tableForDBDescription] = await OpenAIDefault(payload);
 
+
     if (typeof tokens !== "number") {
-        setTimeout(async function () {
-            [tokens, res] = await OpenAIDefault(payload);
-        }, 30000);
+        return new Response("Too many requests", {
+            status: 429,
+            headers: { 'Content-Type': 'text/html' }
+        });
     }
-    console.log(tableForDBDescription);
     await fetchUpdateBalance(token.user.email, tokens);
 
-    await fetchCreateTable(token.user.email, tableForDB, tableForDBDescription, "2023-7-28 9:00")
-    return Response.json(freeTime);
+    try {
+        tableForDBDescription = jsonrepair(tableForDBDescription)
+    } catch (err) {
+        return new Response("Something went wrong.", {
+            status: 400,
+            headers: { 'Content-Type': 'text/html' }
+        });
+    }
+
+    let ezxamsCalendarID = await createCalendar(accessToken, calendars, userTimeZone);
+    ezxamsCalendarID = ezxamsCalendarID.id;
+
+    for (let event in tableForEvents) {
+        await addEvent(accessToken, ezxamsCalendarID, tableForEvents[event]);
+    }
+
+    await fetchCreateTable(token.user.email, tableForDB, JSON.parse(tableForDBDescription), deadline)
+    return new Response("Done", {
+        status: 200,
+        headers: { 'Content-Type': 'text/html' }
+    });
 };
-// export async function POST(req, res) {
-//     const token = await getToken({ req });
-//     console.log(token);
-//     const accessToken = token.account.access_token;
-// }

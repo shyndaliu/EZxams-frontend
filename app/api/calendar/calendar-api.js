@@ -33,7 +33,6 @@ export async function createCalendar(accessToken, calendars, userTimeZone) {
         body: JSON.stringify({ summary: "EZxams", timeZone: userTimeZone }),
     }).catch((e) => console.log(e));
     const body = await res.json();
-    console.log(body);
     return { id: body.id }
 }
 
@@ -46,6 +45,5 @@ export async function addEvent(accessToken, calendarID, event) {
         body: JSON.stringify(event),
     }).catch((e) => console.log(e));
     let body = await res.json();
-    console.log(body);
     return new Response(200);
 }

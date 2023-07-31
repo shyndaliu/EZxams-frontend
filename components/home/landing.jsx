@@ -51,7 +51,13 @@ export default function Landing() {
           animate={{ x: 0 }}>
           <div className="z-10 w-full max-w-[70%] md:max-w-[70%] h-full max-h-[60%] px-10 py-10 bg-purple bg-opacity-20 flex flex-col justify-around items-center rounded-[50px]">
 
-            <div className="w-[200px] h-[200px] rounded-full bg-back-white my-5"></div>
+            <div className="w-[200px] h-[200px] rounded-full bg-back-white my-5">
+              <Image src="/logo-dark.png"
+                alt="EZxams logo"
+                width="200"
+                height="200"
+                className="mr-2 rounded-sm"></Image>
+            </div>
 
             <button
               disabled={signInClicked}

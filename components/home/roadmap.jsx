@@ -1,24 +1,27 @@
 'use client';
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchSignIn, fetchActiveTable } from "@/app/api/auth/[...nextauth]/testroute";
 import UserTimeline from "./users-timeline";
 import RoadmapLanding from "./roadmap-landing";
 
 
 export default function Roadmap({ session }) {
-    let activeTable;
-    console.log(session);
+    const [activeTable, setActiveTable] = useState();
     const { email, image } = session?.user || {};
-    useEffect(() => {
+
+    const getTable = async () => {
         localStorage.setItem('email', email)
         fetchSignIn(session);
+        setActiveTable(await fetchActiveTable(email));
+    }
+
+    useEffect(() => {
+        getTable();
     }, []);
-    //activeTable = { "table": "dfsdfsd" };
-    // check authorization?->get table
     return (
         <>
-            {activeTable ? <UserTimeline /> : <RoadmapLanding />}
+            {activeTable?.body && activeTable?.description ? <UserTimeline table={activeTable.body} description={activeTable.description} /> : <RoadmapLanding />}
         </>
     );
 }

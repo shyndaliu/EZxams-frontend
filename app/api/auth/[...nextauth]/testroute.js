@@ -1,7 +1,7 @@
 
 export async function fetchSignIn(session) {
     const { email, image } = session?.user || {};
-    fetch("http://localhost:8000/auth/users", {
+    fetch("https://fastapi-lnnw.onrender.com/auth/users", {
         method: "POST",
         body: JSON.stringify({
             "email": email,
@@ -12,10 +12,9 @@ export async function fetchSignIn(session) {
     }).catch((e) => console.log(e));
 }
 
-export async function fetchActiveTable(session) {
-    const { email, image } = session?.user || {};
+export async function fetchActiveTable(email) {
     try {
-        const response = await fetch(`http://localhost:8000/tables?email=${email}`);
+        const response = await fetch(`https://fastapi-lnnw.onrender.com/tables?email=${email}`);
         if (response.ok) {
             const data = await response.json();
             return data["table"]
@@ -32,7 +31,7 @@ export async function fetchActiveTable(session) {
 
 export async function fetchCheckBalance(email) {
     try {
-        const response = await fetch(`http://localhost:8000/auth/users/balance?email=${email}`);
+        const response = await fetch(`https://fastapi-lnnw.onrender.com/auth/users/balance?email=${email}`);
         if (response.ok) {
             const data = await response.json();
             return data["balance"]
@@ -45,7 +44,7 @@ export async function fetchCheckBalance(email) {
 }
 
 export async function fetchUpdateBalance(email, new_balance) {
-    fetch("http://localhost:8000/auth/users/balance", {
+    fetch("https://fastapi-lnnw.onrender.com/auth/users/balance", {
         method: "POST",
         body: JSON.stringify({
             "email": email,
@@ -58,7 +57,7 @@ export async function fetchUpdateBalance(email, new_balance) {
 }
 
 export async function fetchCreateTable(email, body, description, deadline) {
-    fetch("http://localhost:8000/tables", {
+    fetch("https://fastapi-lnnw.onrender.com/tables", {
         method: "POST",
         body: JSON.stringify({
             "email": email,
