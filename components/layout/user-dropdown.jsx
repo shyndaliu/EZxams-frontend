@@ -1,6 +1,7 @@
 
 import { Fragment } from "react";
 import { signOut } from "next-auth/react";
+import { RocketLaunchIcon } from '@heroicons/react/24/outline'
 import { ArrowRightOnRectangleIcon } from '@heroicons/react/20/solid'
 import { CalendarDaysIcon } from "@heroicons/react/24/outline"
 import { ChatBubbleLeftRightIcon } from '@heroicons/react/24/outline'
@@ -56,6 +57,14 @@ export default function UserDropdown({ session }) {
                     >
                       <ChatBubbleLeftRightIcon className="h-4 w-4" />
                       <p className="text-sm">Chat with Cal Newport</p>
+                    </button>
+                  </a>
+                  <a href="/about-us">
+                    <button
+                      className={cx(active ? 'bg-gray-100' : '', 'relative flex w-full items-center justify-start space-x-2 rounded-md p-2 text-sm text-gray-700')}
+                    >
+                      <RocketLaunchIcon className="h-4 w-4" />
+                      <p className="text-sm">About Us</p>
                     </button>
                   </a>
                   <button
