@@ -211,7 +211,7 @@ export default function Chat({ session }) {
     <div className="flex-1 w-full border-zinc-100 bg-white overflow-hidden">
       <div
         ref={chatContainerRef}
-        className="flex-1 w-full relative max-h-[calc(100vh-4rem)] overflow-x-hidden"
+        className="flex-1 w-full relative max-h-[calc(100vh-4rem)] overflow-x-hidden mt-[60px] xl:mt-0"
         onScroll={handleScroll}
       >
         {messages.map(({ content, role }, index) => (

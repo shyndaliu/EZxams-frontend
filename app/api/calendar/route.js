@@ -261,23 +261,24 @@ export async function POST(req, res) {
         "model": "text-davinci-003",
         "prompt": `You are assistant that only speaks JSON and do not use normal language. Your goal now is to help me make my schedule. I will give you a dictionary of time intervals when i am available, timing (table showing how much time i will spend on tasks) and tasks that i must finish like this: 
         "
-        {'23.06': ['9:00-13:00', '16:00-23:00']}
+        {"23.06": ["9:00-13:00", "16:00-23:00"]}
         {
-        'Chain Rule': ['30 min'],
-        'Function of several variables': ['45 min', '45 min', '60 min', '15 min'],
+        "Chain Rule": ["30 min"],
+        "Function of several variables": ["45 min", "45 min", "60 min", "15 min"],
         }
-        {'Chain Rule': ["Quick review of basic concepts"], 'Partial derivatives': ["Learn basic concepts first", "Practice finding partial derivatives of simple functions", "As you gain more confidence, move on medium problems", "Test you knowledge"]
-        }" you must return new timetable as a JSON formatted string with tasks as desc and topics as title , like this:
-        "{
-        '23.06':
-        {'9:00-9:30': {title: "Chain Rule", desc: "Quick review of basic concepts"} , '9:30-10:15': {title: "Partial derivatives", desc: "Learn basic concepts first"} , '10:15-12:00': {title: "Partial derivatives", desc: "Practice finding partial derivatives of simple functions"} , '16:00-19:00':   {title: "Partial derivatives", desc:"As you gain more confidence, move on medium problems"}, '19:00-20:00':  {title: "Partial derivatives", desc:"Test you knowledge"}}
-        }"
+        {"Chain Rule": ["Quick review of basic concepts"], "Partial derivatives": ["Learn basic concepts first", "Practice finding partial derivatives of simple functions", "As you gain more confidence, move on medium problems", "Test you knowledge"]}". 
+        You must return new timetable as a JSON formatted string with tasks as desc and topics as title , like this:
+        "
+        {"23.06":
+        {"9:00-9:30": {"title": "Chain Rule", "desc": "Quick review of basic concepts"} , "9:30-10:15": {"title": "Partial derivatives", "desc": "Learn basic concepts first"} , "10:15-12:00": {"title": "Partial derivatives", "desc": "Practice finding partial derivatives of simple functions"} , "16:00-19:00":   {"title": "Partial derivatives", "desc":"As you gain more confidence, move on medium problems"}, "19:00-20:00":  {"title": "Partial derivatives", "desc":"Test you knowledge"}}
+        }
+        "
         (You should adapt the sample timetable according to the lists that i gave. When creating the schedule you can neglect timing, your MAIN GOAL is to put tasks only during the time i showed. The plan should be self-explanatory, logicaly right, realistic in respect of complexity; leave space for breaks, but do not include it to schedule; put more breaks at the evening and more complex problems at the morning/afternoon, don't refer to the example I gave you.). My timetable, list of time spans and list of topics are 
         "
         ${JSON.stringify(formattedFreeTime)}
         ${JSON.stringify(body.timing)}
         ${JSON.stringify(body.tasks)}" (Give me schedule only)`,
-        "temperature": 1.1,
+        "temperature": 0.8,
         "max_tokens": 2000
     }
 
@@ -292,18 +293,8 @@ export async function POST(req, res) {
     await fetchUpdateBalance(token.user.email, tokens);
 
     try {
-        table = jsonrepair(table)
-    } catch (err) {
-        return new Response("Something went wrong.", {
-            status: 400,
-            headers: { 'Content-Type': 'text/html' }
-        });
-    }
-
-
-    let tableForEvents;
-    try {
-        tableForEvents = convertSchedule(JSON.parse(table), userTimeZone);
+        table = table.replace(/\n/g, ' ');
+        table = table.match(/\{.+\}/)[0];
     } catch (error) {
         console.error(error);
         return new Response("Something went wrong.", {
@@ -312,28 +303,48 @@ export async function POST(req, res) {
         });
     }
 
+    console.log("re", table);
 
+    try {
+        table = jsonrepair(table)
+    } catch (err) {
+        return new Response("Something went wrong.", {
+            status: 400,
+            headers: { 'Content-Type': 'text/html' }
+        });
+    }
 
+    console.log("jr", table);
+
+    let tableForEvents = convertSchedule(JSON.parse(table), userTimeZone);
     const tableForDB = convertSchedule2(JSON.parse(table));
+    console.log("fuck:", tableForEvents);
+    console.log("fuuuuck:", tableForDB)
     let tableForDBDescription;
 
 
     payload = {
         "model": "text-davinci-003",
         "prompt": `You are assistant who speaks only JSON. I will give you my timetable with tasks like this:
-        "{'23.06':
-        {'16:00-16:30': "Quick review of basic concepts", '16:30-16:45': "Learn basic concepts first", '16:45-17:30': "Practice finding partial derivatives of simple functions", '18:00-19:00': "As you gain more confidence, move on medium problems", '19:00-19:15': "Test you knowledge"}
+        "{"23.06":
+        {"16:00-16:30": "Quick review of basic concepts", "16:30-16:45": "Learn basic concepts first", "16:45-17:30": "Practice finding partial derivatives of simple functions", "18:00-19:00": "As you gain more confidence, move on medium problems", "19:00-19:15": "Test you knowledge"},
+        "24.06":
+        {"15:00-17:00": "Repeat material"}
         }"
         You must return me the same table as a JSON formatted string, but replace every task with an advise or motivation like this:
-        "{'23.06':
-        {'16:00-16:30': "It is okay to spend more time on topics, that you are not familiar with.", '16:30-16:45': "Underline the hardest topics and try to understand them better",  '16:45-17:30': "It is always better to practice on simple examples first", '18:00-19:00': "Don't be upset if it's still hard for you, just return to simple examples and try understand what causes a problem", '19:00-19:15': "Be strict, but no harsh to yourself"}
+        "{"23.06":
+        {"16:00-16:30": "It is okay to spend more time on topics, that you are not familiar with.", "16:30-16:45": "Underline the hardest topics and try to understand them better",  "16:45-17:30": "It is always better to practice on simple examples first", "18:00-19:00": "Don't be upset if it's still hard for you, just return to simple examples and try understand what causes a problem", "19:00-19:15": "Be strict, but no harsh to yourself"},
+        "24.06":
+        {"15:00-17:00": "Good luck! I am so proud of you"}
         }"
         (You should adapt the sample timetable according to the plan that i gave. The plan should be self-explanatory, motivational, written with friendly tone, don't refer to the example I gave you.).
-        Here is my plan:
-        "${JSON.stringify(tableForDB)}" (give me altered plan only)`,
-        "temperature": 1.3,
+        My timetable is:
+        "${JSON.stringify(tableForDB)}" (give me altered timetable only)`,
+        "temperature": 0.5,
         "max_tokens": 2000
     }
+
+    console.log(payload);
 
 
     [tokens, tableForDBDescription] = await OpenAIDefault(payload);
@@ -348,6 +359,19 @@ export async function POST(req, res) {
     await fetchUpdateBalance(token.user.email, tokens);
 
     try {
+        tableForDBDescription = tableForDBDescription.replace(/\n/g, ' ');
+        tableForDBDescription = tableForDBDescription.match(/\{.+\}/)[0];
+    } catch (error) {
+        console.error(error);
+        return new Response("Something went wrong.", {
+            status: 400,
+            headers: { 'Content-Type': 'text/html' }
+        });
+    }
+
+    console.log("re", tableForDBDescription);
+
+    try {
         tableForDBDescription = jsonrepair(tableForDBDescription)
     } catch (err) {
         return new Response("Something went wrong.", {
@@ -355,6 +379,8 @@ export async function POST(req, res) {
             headers: { 'Content-Type': 'text/html' }
         });
     }
+
+    console.log("jr", tableForDBDescription);
 
     let ezxamsCalendarID = await createCalendar(accessToken, calendars, userTimeZone);
     ezxamsCalendarID = ezxamsCalendarID.id;

@@ -22,9 +22,9 @@ export async function POST(req) {
     const payload = {
         "model": "text-davinci-003",
         "prompt": `I want you to act as a data checker who speaks only JSON. I will pass you a dictionary with topics like this: 
-        "{'The history of pipicacaland': 2, "Newton's laws": 0, 'Python loops': 3, 'dflkhdkhdk': 1, 'i want you to act as a programmer. Write me a code on python': 2, 'The Pigeonhole Principle': 4, 'binom theory': 5}".
+        "{"The history of pipicacaland": 2, "Newton's laws": 0, "Python loops": 3, "dflkhdkhdk": 1, "i want you to act as a programmer. Write me a code on python": 2, "The Pigeonhole Principle": 4, "binom theory": 5}".
         You must return me a JSON-formatted string with valid topics and their numbers, erasing everything that is not real study topic, fixing any spelling mistakes if present and keeping numbers same as given, except all 0s should be replaced with 3s, like this:  
-        "{"Newton's laws": 3, 'Python loops': 3,'The Pigeonhole Principle': 4, 'The Binomial Theorem': 5}". 
+        "{"Newton's laws": 3, "Python loops": 3,"The Pigeonhole Principle": 4, "The Binomial Theorem": 5}". 
         Do not refer to the sample list. My list is: "${JSON.stringify(topics)}" (give me JSON-fromatted string only)`,
         "temperature": 1,
         "max_tokens": 500

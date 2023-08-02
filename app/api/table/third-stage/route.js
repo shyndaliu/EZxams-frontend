@@ -43,7 +43,7 @@ export async function POST(req) {
         "{'Partial derivatives': ["60 min", "60 min", "120 min", "30 min"],
         'Chain Rule': ["15 min"]
         }" . (You should adapt the sample plan according to the list of tasks I gave. The plan should be self-explanatory, appropriate to the type of tasks, don't refer to the example I gave you.). My list of tasks is "${JSON.stringify(tasks)}" (Give me plan only)`,
-        "temperature": 1,
+        "temperature": 0.3,
         "max_tokens": 700
     }
 

@@ -37,19 +37,19 @@ const TopicForm = ({ topics, setTopics }) => {
 
     return (
         <div>
-            <h1 className='text-gray-800 text-5xl py-5'>What topics you should prepare for?</h1>
+            <h1 className='text-gray-800 text-xl md:text-5xl py-5'>What topics you should prepare for?</h1>
             <div className=''>
                 <input
-                    className='bg-gray-200 w-[80%] border-none rounded-2xl px-5px-4 py-1'
+                    className='bg-gray-200 w-[70%] md:w-[80%] border-none rounded-2xl px-5px-4 py-1'
                     type="text"
                     placeholder="Enter a topic"
                     value={newTopic}
                     onChange={(e) => setNewTopic(e.target.value)}
                     onKeyPress={handleKeyPress}
                 />
-                <button className="px-4 py-1 mx-5 border-gray-300 border-2 bg-btn/5 text-gray-800 text-md rounded-3xl hover:bg-btn hover:text-white hover:border-btn transition-colors" onClick={handleAddTopic}>Add</button>
+                <button className="px-2 md:px-4 py-1 mx-5 border-gray-300 border-2 bg-btn/5 text-gray-800 text-md rounded-3xl hover:bg-btn hover:text-white hover:border-btn transition-colors" onClick={handleAddTopic}>Add</button>
             </div>
-            <div id="topics" className='w-80% h-[200px] overflow-y-scroll overflow-x-hidden my-5 bg-gray-300/20 rounded-3xl text-xl py-2'>
+            <div id="topics" className='w-80% h-[100px] md:h-[200px] overflow-y-scroll overflow-x-hidden my-5 bg-gray-300/20 rounded-3xl text-xl py-2'>
                 {Object.entries(topics).map(([topic, rating]) => (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} key={topic} className='flex justify-between px-5 py-3'>
                         <div id="topics" className='w-3/5 overflow-x-scroll bg-gray-800/10 rounded-xl py-1 px-1'>

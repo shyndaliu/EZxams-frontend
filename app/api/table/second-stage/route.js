@@ -36,11 +36,10 @@ export async function POST(req) {
 
     const payload = {
         "model": "text-davinci-003",
-        "prompt": `You are assistant who only speaks JSON. I want you to act as great teacher and study coach. Your goal now is to make a detailed and effective exam preparation plan. I will give you a list of topics that will be on exam with corresponding level of my knowledge like this: "{'Partial derivatives' : 1, 'Chain rule': 5, 'Function of several variables': 3}". You must return me a study plan as a JSON fromatted string like this: "
-        {'Partial derivatives': ["Learn basic concepts first", "Practice finding partial derivatives of simple functions", "As you gain more confidence, move on medium problems", "Test you knowledge"],
-        'Chain Rule': ["Quick review of basic concepts"],
-        'Function of several variables': ["Review the fundamentals of functions of several variables", "Solve problems involving optimization and critical points of functions of several variables."]
-        }." 
+        "prompt": `You are assistant who only speaks JSON. I want you to act as great teacher and study coach. Your goal now is to make a detailed and effective exam preparation plan. I will give you a list of topics that will be on exam with corresponding level of my knowledge like this: 
+        "{"Partial derivatives" : 1, "Chain rule": 5, "Function of several variables": 3}". 
+        You must return me a study plan as a JSON fromatted string like this: 
+        "{"Partial derivatives": ["Learn basic concepts first", "Practice finding partial derivatives of simple functions", "As you gain more confidence, move on medium problems", "Test you knowledge"], "Chain Rule": ["Quick review of basic concepts"],"Function of several variables": ["Review the fundamentals of functions of several variables", "Solve problems involving optimization and critical points of functions of several variables."]}". 
         (You should adapt the sample plan according to the list of topics I gave. The plan should be self-explanatory, appropriate to the subject and suitable to my level, don't refer to the example I gave you.). My list of topics is "${JSON.stringify(topics)}" (Give me plan only) `,
         "temperature": 1,
         "max_tokens": 800,
